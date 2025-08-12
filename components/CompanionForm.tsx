@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,8 +21,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { subjects } from "@/constants";
+import { Textarea } from "@/components/ui/textarea";
+import { createCompanion } from "@/lib/actions/companion.actions";
+import { redirect } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Companion is required." }),
@@ -31,11 +32,10 @@ const formSchema = z.object({
   topic: z.string().min(1, { message: "Topic is required." }),
   voice: z.string().min(1, { message: "Voice is required." }),
   style: z.string().min(1, { message: "Style is required." }),
-  duration: z.coerce.number().min(1, { message: "Duration is required.)" }),
+  duration: z.coerce.number().min(1, { message: "Duration is required." }),
 });
 
 const CompanionForm = () => {
-  // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -48,11 +48,15 @@ const CompanionForm = () => {
     },
   });
 
-  // 2. Define a submit handler.
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const companion = await createCompanion(values);
+
+    if (companion) {
+      redirect(`/companions/${companion.id}`);
+    } else {
+      console.log("Failed to create a companion");
+      redirect("/");
+    }
   };
 
   return (
@@ -75,7 +79,6 @@ const CompanionForm = () => {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="subject"
@@ -94,8 +97,8 @@ const CompanionForm = () => {
                   <SelectContent>
                     {subjects.map((subject) => (
                       <SelectItem
-                        key={subject}
                         value={subject}
+                        key={subject}
                         className="capitalize"
                       >
                         {subject}
@@ -108,7 +111,6 @@ const CompanionForm = () => {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="topic"
@@ -117,7 +119,7 @@ const CompanionForm = () => {
               <FormLabel>What should the companion help with?</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="E.g. Derivatives & Integrals"
+                  placeholder="Ex. Derivates & Integrals"
                   {...field}
                   className="input"
                 />
@@ -152,7 +154,6 @@ const CompanionForm = () => {
             </FormItem>
           )}
         />
-
         <FormField
           control={form.control}
           name="style"
@@ -170,7 +171,7 @@ const CompanionForm = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="formal">Formal</SelectItem>
-                    <SelectItem value="Casual">Casual</SelectItem>
+                    <SelectItem value="casual">Casual</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
