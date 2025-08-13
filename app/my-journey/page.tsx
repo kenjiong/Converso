@@ -68,7 +68,7 @@ const Profile = async () => {
 
       <Accordion type="multiple">
         <AccordionItem value="recent">
-          <AccordionTrigger className="font-bold text-2xl">
+          <AccordionTrigger className="font-bold text-2xl cursor-pointer">
             Recent Sessions
           </AccordionTrigger>
           <AccordionContent>
@@ -79,7 +79,7 @@ const Profile = async () => {
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="companions">
-          <AccordionTrigger className="font-bold text-2xl">
+          <AccordionTrigger className="font-bold text-2xl cursor-pointer">
             My Companions {`(${companions.length})`}
           </AccordionTrigger>
           <AccordionContent>
